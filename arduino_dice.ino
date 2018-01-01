@@ -1,13 +1,6 @@
 //Sample using LiquidCrystal library
 #include <LiquidCrystal.h>
 
-/*******************************************************
-
-  This program will test the LCD panel and the buttons
-  Mark Bramwell, July 2010
-
-********************************************************/
-
 // select the pins used on the LCD panel
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
@@ -122,8 +115,8 @@ void loop()
 
   if (lcd_key != btnNONE &&
       lcd_key != prev_lcd_key &&
-      (lcd_key == btnUP || lcd_key == btnDOWN)) {
-
+      (lcd_key == btnUP || lcd_key == btnDOWN || lcd_key == btnLEFT)
+  ) {
     // clear screen on new button press
     lcd.clear();
     Serial.print("\nclear: ");
@@ -134,18 +127,18 @@ void loop()
   {
     case btnDOWN:
       {
-        //     lcd.print("DOWN ");
         rollTwoDices();
         break;
       }
     case btnLEFT:
       {
-        //     lcd.print("LEFT   ");
+        diceOne = 0;
+        diceTwo = 0;
+        printStatsDetailed();
         break;
       }
     case btnUP:
       {
-        //     lcd.print("UP    ");
         diceOne = 0;
         diceTwo = 0;
         printStats();
@@ -153,26 +146,18 @@ void loop()
       }
     case btnRIGHT:
       {
-        //     lcd.print("RIGHT  ");
         break;
       }
     case btnSELECT:
       {
-        //     lcd.print("SELECT");
         break;
       }
     case btnNONE:
       {
-        //     lcd.print("NONE  ");
-
-        // if (prev_lcd_key != lcd_key) {
-        //   Serial.print("\nnone: ");
-        //   Serial.println(lcd_key);
-        // }
-
         if (prev_lcd_key != lcd_key &&
             diceOne > 0 &&
-            diceTwo > 0
+            diceTwo > 0 &&
+            prev_lcd_key == btnDOWN
         ) {
           showDiceSum();
           addStats();
@@ -180,8 +165,10 @@ void loop()
         break;
       }
   }
+
   prev_lcd_key = lcd_key;
 }
+
 
 // -------------------------------------------------------------------------
 
@@ -268,8 +255,25 @@ void addStats() {
 
   stats[idx] += 1;
   globalCount += 1;
+}
 
-//  Serial.println(globalCount);
+void printStatsDetailed() {
+  String str = "";
+
+  for (int i = 0; i <= 5; i++) {
+    str = str + stats[i];
+    if (i < 5) { str += "/"; }
+  }
+  lcd.setCursor(0, 0);
+  lcd.print(str);
+
+  str = "";
+  for (int i = 6; i <= 10; i++) {
+    str = str + stats[i];
+    if (i < 10) { str += "/"; }
+  }
+  lcd.setCursor(0, 1);
+  lcd.print(str);
 }
 
 void printStats() {
@@ -328,18 +332,6 @@ void printStatsBar(int col, int val, int maxVal) {
     lcd.setCursor(col, 1);
     lcd.write(barLines);
   }
-
-  // Serial.print(" max: ");
-  // Serial.print(maxVal);
-  // Serial.print(" val: ");
-  // Serial.print(val);
-  // Serial.print(" proc: ");
-  // Serial.print(proc);
-  // Serial.print(" lines: ");
-  // Serial.print(barLines);
-  Serial.println("\n-----------");
-
-  //  lcd.print(val);
 }
 
 int getBarLines(float proc) {
@@ -351,13 +343,12 @@ int getBarLines(float proc) {
 }
 
 int getMaxValue() {
- int max = 0;
+  int max = 0;
 
- for (int i = 0; i <= 10; i++){
-   if (max < stats[i]) {
-     max = stats[i];
-   }
- }
- return max;
+  for (int i = 0; i <= 10; i++){
+    if (max < stats[i]) {
+      max = stats[i];
+    }
+  }
+  return max;
 }
-
