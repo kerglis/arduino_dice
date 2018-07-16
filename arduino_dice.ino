@@ -316,9 +316,7 @@ void printStatsBar(int col, int val, int maxVal) {
     lcd.setCursor(col, 0);
     lcd.write(topLines);
 
-    Serial.print(" toplines: ");
     Serial.print(topLines);
-
 
     // bottom row full
     lcd.setCursor(col, 1);
@@ -326,9 +324,7 @@ void printStatsBar(int col, int val, int maxVal) {
   } else {
     // make it one (bottom) row
 
-    Serial.print(" botlines: ");
     Serial.print(barLines);
-
     lcd.setCursor(col, 1);
     lcd.write(barLines);
   }
